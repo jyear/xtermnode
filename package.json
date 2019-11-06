@@ -1,0 +1,21 @@
+{
+  "name": "nodesocket",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "supervisor --harmony app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.11.0",
+    "koa-router": "^7.4.0",
+    "koa2": "^2.0.0-alpha.7",
+    "koa2-cors": "^2.0.6",
+    "node-pty": "^0.9.0",
+    "socket.io": "^2.3.0",
+    "supervisor": "^0.12.0"
+  }
+}
