@@ -46,10 +46,9 @@ router.post("/term", async (ctx, next) => {
         rows: rows || 24,
         cwd: env.PWD,
         env: env,
-        encoding: "utf8"
+        encoding: "utf8" //让输出的编码为utf8
       }
     );
-
   console.log("Created terminal with PID: " + term.pid);
   if (!terms[term.pid]) {
     terms[term.pid] = {};
@@ -59,12 +58,14 @@ router.post("/term", async (ctx, next) => {
   terms[term.pid].writable = false;
   logs[term.pid] = "";
 
+  //返回启动的pid  用于socket连接后操作term
+
   ctx.response.body = {
     data: term.pid.toString(),
     code: 200,
     message: "success"
   };
-
+  //创建的时候 保存初始化terminal数据  以便socket连接后前端显示  并且判断初始化语句 以便判断语句执行完毕使用
   term.on("data", data => {
     logs[term.pid] += data;
     if (!terms[parseInt(term.pid)].initCode) {
@@ -81,8 +82,10 @@ io.of("/termsocket").on("connection", socket => {
   if (!terms || !terms[pid]) {
     return;
   }
+  //socket连接根据pid操作对应的terminal
   var term = terms[pid].terminal;
 
+  //把存起来的初始化数据发送给前端展示
   socket.send(logs[term.pid]);
   //   function buffer(socket, timeout) {
   //     let s = "";
@@ -121,6 +124,8 @@ io.of("/termsocket").on("connection", socket => {
   //     };
   //   }
   //   const send = USE_BINARY ? bufferUtf8(socket, 5) : buffer(socket, 5);
+
+  //监听terminal输出数据  通过socket发送给前端展示
   term.on("data", function(data) {
     if (terms[pid].initCode && data == terms[pid].initCode) {
       if (terms[pid].filepath && terms[pid].filepath.length > 0) {
@@ -139,6 +144,7 @@ io.of("/termsocket").on("connection", socket => {
       // The WebSocket is not open, ignore
     }
   });
+
   socket.on("message", data => {
     if (terms[pid].writable) term.write(data);
   });
@@ -161,6 +167,7 @@ io.of("/termsocket").on("connection", socket => {
     }
     term.write(`python ${name}\r`);
   });
+  //socket关闭的时候关闭term
   socket.on("close", () => {
     console.log("terminal关闭PID:" + socket.request._query.pid);
     if (terms[pid].filepath && terms[pid].filepath.length > 0) {
@@ -174,6 +181,14 @@ io.of("/termsocket").on("connection", socket => {
   });
 });
 
+io.close(() => {
+  for (let key in terms) {
+    terms[key].destroy();
+    term[key].kill();
+  }
+  delete terms;
+  delete logs;
+});
 // 监听端口
 server.listen(process.env.PORT || port, () => {
   console.log(`app run at : http://127.0.0.1/:${port}`);
