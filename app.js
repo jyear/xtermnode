@@ -183,6 +183,10 @@ io.of("/termsocket").on("connection", socket => {
 
 io.close(() => {
   for (let key in terms) {
+    if (terms[key].filepath && terms[key].filepath.length > 0) {
+      fs.unlinkSync(terms[key].filepath);
+      terms[key].filepath = null;
+    }
     terms[key].destroy();
     term[key].kill();
   }
