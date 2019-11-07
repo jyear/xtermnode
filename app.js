@@ -27,9 +27,10 @@ app.use(
 
 // 首页路由
 let router = new Router();
-router.get("/", ctx => {
+router.get("/", async (ctx, next) => {
   ctx.response.type = "html";
   ctx.response.body = fs.createReadStream("./index.html");
+  await next();
 });
 router.post("/term", async (ctx, next) => {
   const env = Object.assign({}, process.env);
@@ -76,10 +77,12 @@ router.post("/term", async (ctx, next) => {
 app.use(router.routes());
 
 io.of("/termsocket").on("connection", socket => {
-  if (!terms || !terms[parseInt(socket.request._query.pid)]) {
+  var pid = parseInt(socket.request._query.pid);
+  if (!terms || !terms[pid]) {
     return;
   }
-  var term = terms[parseInt(socket.request._query.pid)].terminal;
+  var term = terms[pid].terminal;
+
   socket.send(logs[term.pid]);
   //   function buffer(socket, timeout) {
   //     let s = "";
@@ -119,19 +122,13 @@ io.of("/termsocket").on("connection", socket => {
   //   }
   //   const send = USE_BINARY ? bufferUtf8(socket, 5) : buffer(socket, 5);
   term.on("data", function(data) {
-    if (
-      terms[parseInt(socket.request._query.pid)].initCode &&
-      data == terms[parseInt(socket.request._query.pid)].initCode
-    ) {
-      if (
-        terms[parseInt(socket.request._query.pid)].filepath &&
-        terms[parseInt(socket.request._query.pid)].filepath.length > 0
-      ) {
-        fs.unlinkSync(terms[parseInt(socket.request._query.pid)].filepath);
-        terms[parseInt(socket.request._query.pid)].filepath = null;
+    if (terms[pid].initCode && data == terms[pid].initCode) {
+      if (terms[pid].filepath && terms[pid].filepath.length > 0) {
+        fs.unlinkSync(terms[pid].filepath);
+        terms[pid].filepath = null;
       }
 
-      terms[parseInt(socket.request._query.pid)].writable = false;
+      terms[pid].writable = false;
     }
     try {
       socket.send(data);
@@ -143,7 +140,7 @@ io.of("/termsocket").on("connection", socket => {
     }
   });
   socket.on("message", data => {
-    if (terms[parseInt(socket.request._query.pid)].writable) term.write(data);
+    if (terms[pid].writable) term.write(data);
   });
   socket.on("leftmessage", data => {
     let name = path.join(
@@ -158,20 +155,17 @@ io.of("/termsocket").on("connection", socket => {
     fs.writeFileSync(name, newData, {
       encoding: "utf8"
     });
-    terms[parseInt(socket.request._query.pid)].filepath = name;
-    if (!terms[parseInt(socket.request._query.pid)].writable) {
-      terms[parseInt(socket.request._query.pid)].writable = true;
+    terms[pid].filepath = name;
+    if (!terms[pid].writable) {
+      terms[pid].writable = true;
     }
     term.write(`python ${name}\r`);
   });
   socket.on("close", () => {
     console.log("terminal关闭PID:" + socket.request._query.pid);
-    if (
-      terms[parseInt(socket.request._query.pid)].filepath &&
-      terms[parseInt(socket.request._query.pid)].filepath.length > 0
-    ) {
-      fs.unlinkSync(terms[parseInt(socket.request._query.pid)].filepath);
-      terms[parseInt(socket.request._query.pid)].filepath = null;
+    if (terms[pid].filepath && terms[pid].filepath.length > 0) {
+      fs.unlinkSync(terms[pid].filepath);
+      terms[pid].filepath = null;
     }
     term.destroy();
     term.kill();
