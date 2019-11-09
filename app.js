@@ -128,10 +128,10 @@ io.of("/termsocket").on("connection", socket => {
   //监听terminal输出数据  通过socket发送给前端展示
   term.on("data", function(data) {
     if (terms[pid].initCode && data == terms[pid].initCode) {
-      if (terms[pid].filepath && terms[pid].filepath.length > 0) {
-        fs.unlinkSync(terms[pid].filepath);
-        terms[pid].filepath = null;
-      }
+      //   if (terms[pid].filepath && terms[pid].filepath.length > 0) {
+      //     fs.unlinkSync(terms[pid].filepath);
+      //     terms[pid].filepath = null;
+      //   }
 
       terms[pid].writable = false;
     }
@@ -157,11 +157,11 @@ io.of("/termsocket").on("connection", socket => {
         parseInt((Math.random() * 100000).toString(), 10) +
         ".py"
     );
-    let newData = data;
-    fs.writeFileSync(name, newData, {
-      encoding: "utf8"
-    });
-    terms[pid].filepath = name;
+    // let newData = data;
+    // fs.writeFileSync(name, newData, {
+    //   encoding: "utf8"
+    // });
+    // terms[pid].filepath = name;
     if (!terms[pid].writable) {
       terms[pid].writable = true;
     }
