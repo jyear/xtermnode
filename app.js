@@ -33,46 +33,46 @@ router.get('/', async (ctx, next) => {
   await next()
 })
 router.post('/term', async (ctx, next) => {
-  // const env = Object.assign({}, process.env)
-  // env['COLORTERM'] = 'truecolor'
-  // var cols = parseInt(ctx.request.query.cols),
-  //   rows = parseInt(ctx.request.query.rows),
-  //   term = pty.spawn(
-  //     process.platform === 'win32' ? 'powershell.exe' : 'bash',
-  //     [],
-  //     {
-  //       name: 'xterm-color',
-  //       cols: cols || 80,
-  //       rows: rows || 24,
-  //       cwd: env.PWD,
-  //       env: env,
-  //       encoding: 'utf8' //让输出的编码为utf8
-  //     }
-  //   )
-  // console.log('Created terminal with PID: ' + term.pid)
-  // if (!terms[term.pid]) {
-  //   terms[term.pid] = {}
-  // }
+  const env = Object.assign({}, process.env)
+  env['COLORTERM'] = 'truecolor'
+  var cols = parseInt(ctx.request.query.cols),
+    rows = parseInt(ctx.request.query.rows),
+    term = pty.spawn(
+      process.platform === 'win32' ? 'powershell.exe' : 'bash',
+      [],
+      {
+        name: 'xterm-color',
+        cols: cols || 80,
+        rows: rows || 24,
+        cwd: env.PWD,
+        env: env,
+        encoding: 'utf8' //让输出的编码为utf8
+      }
+    )
+  console.log('Created terminal with PID: ' + term.pid)
+  if (!terms[term.pid]) {
+    terms[term.pid] = {}
+  }
 
-  // terms[term.pid].terminal = term
-  // terms[term.pid].writable = false
-  // logs[term.pid] = ''
+  terms[term.pid].terminal = term
+  terms[term.pid].writable = false
+  logs[term.pid] = ''
 
-  // //返回启动的pid  用于socket连接后操作term
+  //返回启动的pid  用于socket连接后操作term
 
-  // ctx.response.body = {
-  //   data: term.pid.toString(),
-  //   code: 200,
-  //   message: 'success'
-  // }
-  // //创建的时候 保存初始化terminal数据  以便socket连接后前端显示  并且判断初始化语句 以便判断语句执行完毕使用
-  // term.on('data', data => {
-  //   logs[term.pid] += data
-  //   if (!terms[parseInt(term.pid)].initCode) {
-  //     terms[parseInt(term.pid)].initCode = data
-  //   }
-  // })
-  ctx.response.body = 'test'
+  ctx.response.body = {
+    data: term.pid.toString(),
+    code: 200,
+    message: 'success'
+  }
+  //创建的时候 保存初始化terminal数据  以便socket连接后前端显示  并且判断初始化语句 以便判断语句执行完毕使用
+  term.on('data', data => {
+    logs[term.pid] += data
+    if (!terms[parseInt(term.pid)].initCode) {
+      terms[parseInt(term.pid)].initCode = data
+    }
+  })
+  //ctx.response.body = 'test'
   await next()
 })
 app.use(router.routes())
