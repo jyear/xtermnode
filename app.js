@@ -68,7 +68,7 @@ router.post('/term', async (ctx, next) => {
   //创建的时候 保存初始化terminal数据  以便socket连接后前端显示  并且判断初始化语句 以便判断语句执行完毕使用
   term.on('data', data => {
     logs[term.pid] += data
-    terms[parseInt(term.pid)].initCode += data
+    terms[parseInt(term.pid)].initCode = data
     // if (!terms[parseInt(term.pid)].initCode) {
 
     // }
