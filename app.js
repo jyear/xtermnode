@@ -167,7 +167,7 @@ io.of('/termsocket').on('connection', socket => {
     if (!terms[pid].writable) {
       terms[pid].writable = true
     }
-    term.write(`python ${data}\r`)
+    term.write(`python3 ${data}\r`)
   })
   //socket关闭的时候关闭term
   socket.on('close', () => {
