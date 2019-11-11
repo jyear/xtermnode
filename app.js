@@ -149,14 +149,14 @@ io.of('/termsocket').on('connection', socket => {
     if (terms[pid].writable) term.write(data)
   })
   socket.on('leftmessage', data => {
-    let name = path.join(
-      __dirname,
-      'file/' +
-        new Date().getTime() +
-        '_' +
-        parseInt((Math.random() * 100000).toString(), 10) +
-        '.py'
-    )
+    // let name = path.join(
+    //   __dirname,
+    //   'file/' +
+    //     new Date().getTime() +
+    //     '_' +
+    //     parseInt((Math.random() * 100000).toString(), 10) +
+    //     '.py'
+    // )
     // let newData = data;
     // fs.writeFileSync(name, newData, {
     //   encoding: "utf8"
@@ -165,7 +165,7 @@ io.of('/termsocket').on('connection', socket => {
     if (!terms[pid].writable) {
       terms[pid].writable = true
     }
-    term.write(`python ${name}\r`)
+    term.write(`python ${data}\r`)
   })
   //socket关闭的时候关闭term
   socket.on('close', () => {
