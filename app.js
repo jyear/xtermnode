@@ -82,7 +82,7 @@ io.of('/termsocket').on('connection', socket => {
   if (!terms || !terms[pid]) {
     return
   }
-  console.log(terms[parseInt(term.pid)].initCode)
+  console.log(terms[pid].initCode)
   //socket连接根据pid操作对应的terminal
   var term = terms[pid].terminal
 
