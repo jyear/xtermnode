@@ -69,7 +69,7 @@ router.post('/term', async (ctx, next) => {
   term.on('data', data => {
     logs[term.pid] += data
     if (!terms[parseInt(term.pid)].initCode) {
-      terms[parseInt(term.pid)].initCode = data
+      terms[parseInt(term.pid)].initCode += data
     }
   })
   //ctx.response.body = 'test'
@@ -82,6 +82,7 @@ io.of('/termsocket').on('connection', socket => {
   if (!terms || !terms[pid]) {
     return
   }
+  console.log(terms[parseInt(term.pid)].initCode)
   //socket连接根据pid操作对应的terminal
   var term = terms[pid].terminal
 
