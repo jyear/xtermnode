@@ -38,7 +38,9 @@ router.post("/term", async (ctx, next) => {
   var cols = parseInt(ctx.request.query.cols),
     rows = parseInt(ctx.request.query.rows),
     term = pty.spawn(
-      process.platform === "win32" ? "powershell.exe" : "bash",
+      process.platform === "win32"
+        ? "powershell.exe"
+        : "sudo docker run -it centos \r",
       ["--login"],
       {
         name: "xterm-color",
@@ -73,7 +75,7 @@ router.post("/term", async (ctx, next) => {
       terms[parseInt(term.pid)].initCode = data;
     }
   });
-  term.write("sudo docker run -it centos \r");
+  //term.write("sudo docker run -it centos \r");
   //ctx.response.body = 'test'
   await next();
 });
