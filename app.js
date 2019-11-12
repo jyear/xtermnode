@@ -73,7 +73,7 @@ router.post("/term", async (ctx, next) => {
       terms[parseInt(term.pid)].initCode = data;
     }
   });
-  term.write("docker run -it centos \r");
+  term.write("sudo docker run -it centos \r");
   //ctx.response.body = 'test'
   await next();
 });
