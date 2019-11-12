@@ -55,7 +55,7 @@ router.post("/term", async (ctx, next) => {
   }
 
   terms[term.pid].terminal = term;
-  terms[term.pid].writable = false;
+  terms[term.pid].writable = true;
   logs[term.pid] = "";
 
   //返回启动的pid  用于socket连接后操作term
