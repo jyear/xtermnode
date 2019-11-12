@@ -40,7 +40,7 @@ router.post("/term", async (ctx, next) => {
     term = pty.spawn(
       process.platform === "win32"
         ? "powershell.exe"
-        : "sudo docker run -it centos \r",
+        : "bash&&sudo docker run -it centos \r",
       ["--login"],
       {
         name: "xterm-color",
