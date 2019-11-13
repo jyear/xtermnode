@@ -55,7 +55,7 @@ router.post("/term", async (ctx, next) => {
     rows = parseInt(ctx.request.query.rows),
     term = pty.spawn(
       process.platform === "win32" ? "powershell.exe" : "docker",
-      ["exec", "-it", "centos"],
+      ["run", "-it", "centos"],
       {
         name: "xterm-color",
         cols: cols || 80,
