@@ -201,7 +201,12 @@ io.close(() => {
   delete logs;
 });
 
-var container = Docker.getContainer("d91e16dc3987");
+var ourDocker = new Docker();
+ourDocker.createContainer({
+  Tty: true,
+  Image: "centos",
+  Cmd: ["sh"]
+});
 console.log(container);
 
 // 监听端口
