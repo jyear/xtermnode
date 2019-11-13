@@ -207,7 +207,7 @@ ourDocker.createContainer({
   Image: "centos",
   Cmd: ["sh"]
 });
-console.log(container);
+console.log(ourDocker);
 
 // 监听端口
 server.listen(process.env.PORT || port, () => {
