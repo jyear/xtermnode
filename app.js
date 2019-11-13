@@ -36,6 +36,14 @@ router.get("/", async (ctx, next) => {
   await next();
 });
 router.post("/term", async (ctx, next) => {
+  var ourDocker = new Docker();
+  ourDocker.createContainer({
+    Tty: true,
+    Image: "centos",
+    Cmd: ["sh"]
+  });
+  console.log(ourDocker);
+
   const env = Object.assign({}, process.env);
   env["COLORTERM"] = "truecolor";
   var cols = parseInt(ctx.request.query.cols),
@@ -200,14 +208,6 @@ io.close(() => {
   delete terms;
   delete logs;
 });
-
-var ourDocker = new Docker();
-ourDocker.createContainer({
-  Tty: true,
-  Image: "centos",
-  Cmd: ["sh"]
-});
-console.log(ourDocker);
 
 // 监听端口
 server.listen(process.env.PORT || port, () => {
