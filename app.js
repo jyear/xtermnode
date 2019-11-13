@@ -7,6 +7,9 @@ const io = require("socket.io")(server);
 const path = require("path");
 var cors = require("koa2-cors");
 var os = require("os");
+
+var Docker = require("dockerode");
+
 var pty = require("node-pty");
 const USE_BINARY = os.platform() !== "win32";
 const port = 8085;
@@ -197,6 +200,10 @@ io.close(() => {
   delete terms;
   delete logs;
 });
+
+var container = Docker.getContainer("d91e16dc3987");
+console.log(container);
+
 // 监听端口
 server.listen(process.env.PORT || port, () => {
   console.log(`app run at : http://127.0.0.1/:${port}`);
