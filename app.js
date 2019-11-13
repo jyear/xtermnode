@@ -36,18 +36,18 @@ router.get("/", async (ctx, next) => {
   await next();
 });
 router.post("/term", async (ctx, next) => {
-  var ourDocker = new Docker();
-  ourDocker
-    .createContainer({
-      Tty: true,
-      Image: "centos",
-      Cmd: ["/bin/bash"],
-      OpenStdin: true
-    })
-    .then(container => {
-      console.log(container);
-      return container.start();
-    });
+  // var ourDocker = new Docker();
+  // ourDocker
+  //   .createContainer({
+  //     Tty: true,
+  //     Image: "centos",
+  //     Cmd: ["/bin/bash"],
+  //     OpenStdin: true
+  //   })
+  //   .then(container => {
+  //     console.log(container);
+  //     return container.start();
+  //   });
 
   const env = Object.assign({}, process.env);
   env["COLORTERM"] = "truecolor";
