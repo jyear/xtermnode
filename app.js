@@ -82,12 +82,12 @@ router.post('/term', async (ctx, next) => {
         encoding: 'utf8' //让输出的编码为utf8
       }
     )
-  terms[term.pid].dirName = name
+
   console.log('Created terminal with PID: ' + term.pid)
   if (!terms[term.pid]) {
     terms[term.pid] = {}
   }
-
+  terms[term.pid].dirName = name
   terms[term.pid].terminal = term
   terms[term.pid].writable = true
   logs[term.pid] = ''
