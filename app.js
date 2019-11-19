@@ -194,7 +194,7 @@ io.of('/termsocket').on('connection', socket => {
       fs.unlinkSync(terms[pid].filepath)
       terms[pid].filepath = null
     }
-
+    term.write('exit\r')
     term.destroy()
     term.kill()
     delete terms[term.pid]
