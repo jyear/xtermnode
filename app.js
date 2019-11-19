@@ -18,7 +18,7 @@ function deleteDir(path) {
     files.forEach((file, index) => {
       let curPath = path + '/' + file
       if (fs.statSync(curPath).isDirectory()) {
-        delDir(curPath) //递归删除文件夹
+        deleteDir(curPath) //递归删除文件夹
       } else {
         fs.unlinkSync(curPath) //删除文件
       }
@@ -214,7 +214,7 @@ io.of('/termsocket').on('connection', socket => {
   //socket关闭的时候关闭term
   socket.on('close', () => {
     console.log('terminal关闭PID:' + socket.request._query.pid)
-    if (terms[key].dirName && terms[key].dirName.length > 0) {
+    if (terms[pid].dirName && terms[pid].dirName.length > 0) {
       deleteDir(terms[pid].dirName)
     }
     term.write('exit\r')
