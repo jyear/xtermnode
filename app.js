@@ -195,10 +195,12 @@ io.of('/termsocket').on('connection', socket => {
       terms[pid].filepath = null
     }
     term.write('exit\r')
-    term.destroy()
-    term.kill()
-    delete terms[term.pid]
-    delete logs[term.pid]
+    setTimeout(() => {
+      term.destroy()
+      term.kill()
+      delete terms[term.pid]
+      delete logs[term.pid]
+    }, 0)
   })
 })
 
