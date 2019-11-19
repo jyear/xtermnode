@@ -198,7 +198,7 @@ io.of('/termsocket').on('connection', socket => {
       '_' +
       parseInt((Math.random() * 100000).toString(), 10) +
       '.py'
-    let name = path.join(__dirname, `file/${terms[pid].dirName}/` + sname)
+    let name = path.join(`${terms[pid].dirName}/` + sname)
     let newData = data
     fs.writeFileSync(name, newData, {
       encoding: 'utf8'
