@@ -5,8 +5,9 @@ const fs = require('fs')
 const server = require('http').Server(app.callback())
 const io = require('socket.io')(server)
 const path = require('path')
-var cors = require('koa2-cors')
-var os = require('os')
+const cors = require('koa2-cors')
+const os = require('os')
+const CronJob = require('cron').CronJob
 const { spawn, exec } = require('child_process')
 // var process = require('process')
 //var Docker = require('dockerode')
@@ -220,7 +221,7 @@ io.of('/termsocket').on('connection', socket => {
     term.destroy()
     term.kill()
     spawn('docker', ['stop', terms[pid].dockerContainerID])
-    spawn('docker', ['rm', terms[pid].dockerContainerID])
+    // spawn('docker', ['rm', terms[pid].dockerContainerID])
     delete terms[term.pid]
     delete logs[term.pid]
   })
@@ -240,15 +241,22 @@ io.close(() => {
   console.log('socket服务关闭')
 })
 
-function timeDelete() {
-  setTimeout(() => {
-    console.log('定时删除已经停止的docker容器任务')
-    spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
-    exec("docker rm `docker ps -a|grep Exited|awk '{print $1}'`")
-    timeDelete()
-  }, 5000)
-}
-timeDelete()
+// function timeDelete() {
+//   setTimeout(() => {
+//     console.log('定时删除已经停止的docker容器任务')
+//     spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
+//     exec("docker rm `docker ps -a|grep Exited|awk '{print $1}'`")
+//     timeDelete()
+//   }, 1000 * 60 * 10)
+// }
+// timeDelete()
+//
+new CronJob(1000 * 5, () => {
+  console.log('定时删除已经停止的docker容器任务')
+  spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
+  exec("docker rm `docker ps -a|grep Exited|awk '{print $1}'`")
+})
+
 // 监听端口
 server.listen(process.env.PORT || port, () => {
   console.log(`app run at : http://127.0.0.1/:${port}`)
