@@ -65,7 +65,9 @@ router.post('/term', async (ctx, next) => {
   //   });
   const env = Object.assign({}, process.env)
   env['COLORTERM'] = 'truecolor'
-  var name = fs.mkdirSync(path.join(__dirname, '/file', new Date().getTime()))
+  var name = fs.mkdirSync(
+    path.join(__dirname, '/file', new Date().getTime().toString())
+  )
   var cols = parseInt(ctx.request.query.cols),
     rows = parseInt(ctx.request.query.rows),
     term = pty.spawn(
