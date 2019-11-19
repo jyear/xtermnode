@@ -215,9 +215,7 @@ io.of('/termsocket').on('connection', socket => {
     //   `${terms[pid].dockerContainerID}:/app/${sname}`
     // ]) //echo 12345 | xargs -I{} cp "{}" Directory
     // console.log(`docker cp ${name} ${terms[pid].dockerContainerID}:/app`)
-    // setTimeout(() => {
-    //   term.write(`python3.8 ${name}\r`)
-    // }, 1000)
+    term.write(`python3.8 ${name}\r`)
   })
   //socket关闭的时候关闭term
   socket.on('close', () => {
