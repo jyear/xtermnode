@@ -251,7 +251,7 @@ io.close(() => {
 // }
 // timeDelete()
 //
-new CronJob(1000 * 5, () => {
+new CronJob('*/5 * * * * *', () => {
   console.log('定时删除已经停止的docker容器任务')
   spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
   exec("docker rm `docker ps -a|grep Exited|awk '{print $1}'`")
