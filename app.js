@@ -232,12 +232,12 @@ io.of('/termsocket').on('connection', socket => {
 io.close(() => {
   for (let key in terms) {
     if (terms[key].dirName && terms[key].dirName.length > 0) {
-      deleteDir(terms[pid].dirName)
+      deleteDir(terms[key].dirName)
     }
     terms[key].destroy()
     term[key].kill()
-    spawn('docker', ['stop', `${terms[pid].dockerContainerID}`])
-    spawn('docker', ['rm', `${terms[pid].dockerContainerID}`])
+    spawn('docker', ['stop', `${terms[key].dockerContainerID}`])
+    spawn('docker', ['rm', `${terms[key].dockerContainerID}`])
   }
   delete terms
   delete logs
