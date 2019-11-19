@@ -7,7 +7,7 @@ const io = require('socket.io')(server)
 const path = require('path')
 var cors = require('koa2-cors')
 var os = require('os')
-const { spawn } = require('child_process')
+const { spawn, exec } = require('child_process')
 // var process = require('process')
 //var Docker = require('dockerode')
 
@@ -250,6 +250,7 @@ function timeDelete() {
   setTimeout(() => {
     console.log('定时删除任务')
     spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
+    exec("docker rm `docker ps -a|grep Exited|awk '{print $1}'`")
     timeDelete()
   }, 5000)
 }
