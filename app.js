@@ -68,6 +68,7 @@ router.post('/term', async (ctx, next) => {
   var name = fs.mkdirSync(
     path.join(__dirname, '/file', new Date().getTime().toString())
   )
+  console.log(`${name}:/app`)
   var cols = parseInt(ctx.request.query.cols),
     rows = parseInt(ctx.request.query.rows),
     term = pty.spawn(
