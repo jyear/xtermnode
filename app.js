@@ -219,12 +219,11 @@ io.of('/termsocket').on('connection', socket => {
     }
     term.write('exit\r')
     console.log(`${terms[pid].dockerContainerID}`)
-    spawn('docker', ['stop', `${terms[pid].dockerContainerID}`])
-    spawn('docker', ['rm', `${terms[pid].dockerContainerID}`])
     process.nextTick = () => {
       term.destroy()
       term.kill()
-
+      spawn('docker', ['stop', `${terms[pid].dockerContainerID}`])
+      spawn('docker', ['rm', `${terms[pid].dockerContainerID}`])
       delete terms[term.pid]
       delete logs[term.pid]
     }
