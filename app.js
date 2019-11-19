@@ -246,11 +246,14 @@ io.close(() => {
   console.log('socket服务关闭')
 })
 
-setTimeout(() => {
-  console.log('定时删除任务')
-  spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
-}, 5000)
-
+function timeDelete() {
+  setTimeout(() => {
+    console.log('定时删除任务')
+    spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
+    timeDelete()
+  }, 5000)
+}
+timeDelete()
 // 监听端口
 server.listen(process.env.PORT || port, () => {
   console.log(`app run at : http://127.0.0.1/:${port}`)
