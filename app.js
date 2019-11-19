@@ -29,7 +29,7 @@ app.use(
     allowHeaders: ['Content-Type', 'Authorization', 'Accept']
   })
 )
-const env = Object.assign({}, process.env)
+
 // nodeterm = pty.spawn(
 //   process.platform === 'win32' ? 'powershell.exe' : 'bash',
 //   [],
@@ -63,13 +63,14 @@ router.post('/term', async (ctx, next) => {
   //     console.log(container);
   //     return container.start();
   //   });
-
+  const env = Object.assign({}, process.env)
   env['COLORTERM'] = 'truecolor'
+  var name = fs.mkdirSync(path.join(__dirname, '/file', new Data().getTime()))
   var cols = parseInt(ctx.request.query.cols),
     rows = parseInt(ctx.request.query.rows),
     term = pty.spawn(
       process.platform === 'win32' ? 'powershell.exe' : 'docker',
-      ['run', '-it', 'own:v1', '/bin/bash'],
+      ['run', '-it', 'own:v1', '-v', `${name}:/app`, '/bin/bash'],
       {
         name: 'xterm-color',
         cols: cols || 80,
@@ -79,6 +80,7 @@ router.post('/term', async (ctx, next) => {
         encoding: 'utf8' //让输出的编码为utf8
       }
     )
+  terms[term.pid].dirName = name
   console.log('Created terminal with PID: ' + term.pid)
   if (!terms[term.pid]) {
     terms[term.pid] = {}
@@ -194,7 +196,7 @@ io.of('/termsocket').on('connection', socket => {
       '_' +
       parseInt((Math.random() * 100000).toString(), 10) +
       '.py'
-    let name = path.join(__dirname, `file/${pid}` + sname)
+    let name = path.join(__dirname, `file/${terms[pid].dirName}/` + sname)
     let newData = data
     fs.writeFileSync(name, newData, {
       encoding: 'utf8'
@@ -205,14 +207,14 @@ io.of('/termsocket').on('connection', socket => {
       terms[pid].writable = true
     }
     //spawn('docker', ['cp', name, `${terms[pid].dockerContainerID}:/app`])
-    spawn('docker', [
-      'cp',
-      'data',
-      `${terms[pid].dockerContainerID}:/app/${sname}`
-    ]) //echo 12345 | xargs -I{} cp "{}" Directory
-    console.log(`docker cp ${name} ${terms[pid].dockerContainerID}:/app`)
+    // spawn('docker', [
+    //   'cp',
+    //   'data',
+    //   `${terms[pid].dockerContainerID}:/app/${sname}`
+    // ]) //echo 12345 | xargs -I{} cp "{}" Directory
+    // console.log(`docker cp ${name} ${terms[pid].dockerContainerID}:/app`)
     setTimeout(() => {
-      term.write(`python3.8 ${sname}\r`)
+      term.write(`python3.8 ${name}\r`)
     }, 1000)
   })
   //socket关闭的时候关闭term
