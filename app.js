@@ -29,6 +29,19 @@ app.use(
   })
 )
 
+nodeterm = pty.spawn(
+  process.platform === 'win32' ? 'powershell.exe' : 'bash',
+  [],
+  {
+    name: 'xterm-color',
+    cols: cols || 80,
+    rows: rows || 24,
+    cwd: env.HOME,
+    env: env,
+    encoding: 'utf8' //让输出的编码为utf8
+  }
+)
+
 // 首页路由
 let router = new Router()
 router.get('/', async (ctx, next) => {
@@ -88,6 +101,11 @@ router.post('/term', async (ctx, next) => {
     logs[term.pid] += data
     if (!terms[parseInt(term.pid)].initCode) {
       terms[parseInt(term.pid)].initCode = data
+      var reg = /root@(.*?)\ app/
+      var regExecRes = reg.exec(data)
+      if (regExecRes && regExecRes[1]) {
+        terms[parseInt(term.pid)].dockerContainerID = regExecRes[1]
+      }
     }
   })
   //term.write("sudo docker run -it centos \r");
@@ -170,23 +188,23 @@ io.of('/termsocket').on('connection', socket => {
     if (terms[pid].writable) term.write(data)
   })
   socket.on('leftmessage', data => {
-    // let name = path.join(
-    //   __dirname,
-    //   'file/' +
-    //     new Date().getTime() +
-    //     '_' +
-    //     parseInt((Math.random() * 100000).toString(), 10) +
-    //     '.py'
-    // )
-    // let newData = data;
-    // fs.writeFileSync(name, newData, {
-    //   encoding: "utf8"
-    // });
-    // terms[pid].filepath = name;
+    var sname =
+      new Date().getTime() +
+      '_' +
+      parseInt((Math.random() * 100000).toString(), 10) +
+      '.py'
+    let name = path.join(__dirname, 'file/' + sname)
+    let newData = data
+    fs.writeFileSync(name, newData, {
+      encoding: 'utf8'
+    })
+    terms[pid].filepath = name
+
     if (!terms[pid].writable) {
       terms[pid].writable = true
     }
-    term.write(`python3 ${data}\r`)
+    nodeterm.write(`docker cp ${name} ${terms[pid].dockerContainerID}:/app`)
+    term.write(`python3 ${sname}\r`)
   })
   //socket关闭的时候关闭term
   socket.on('close', () => {
