@@ -218,13 +218,14 @@ io.of('/termsocket').on('connection', socket => {
       deleteDir(terms[pid].dirName)
     }
     term.write('exit\r')
+    spawn('docker', ['stop', `${terms[pid].dockerContainerID}`])
+    spawn('docker', ['rm', `${terms[pid].dockerContainerID}`])
     process.nextTick = () => {
       term.destroy()
       term.kill()
+
       delete terms[term.pid]
       delete logs[term.pid]
-      spawn('docker', ['stop', `${terms[pid].dockerContainerID}`])
-      spawn('docker', ['rm', `${terms[pid].dockerContainerID}`])
     }
   })
 })
