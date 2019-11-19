@@ -202,7 +202,7 @@ io.of('/termsocket').on('connection', socket => {
     if (!terms[pid].writable) {
       terms[pid].writable = true
     }
-    nodeterm.write(`docker cp ${name} ${terms[pid].dockerContainerID}:/app`)
+    nodeterm.write(`docker cp ${name} ${terms[pid].dockerContainerID}:/app \r`)
     process.nextTick = () => {
       term.write(`python3.8 ${sname}\r`)
     }
