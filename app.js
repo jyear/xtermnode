@@ -7,6 +7,7 @@ const io = require('socket.io')(server)
 const path = require('path')
 var cors = require('koa2-cors')
 var os = require('os')
+// var process = require('process')
 
 var Docker = require('dockerode')
 
@@ -195,12 +196,12 @@ io.of('/termsocket').on('connection', socket => {
       terms[pid].filepath = null
     }
     term.write('exit\r')
-    setTimeout(() => {
+    process.nextTick = () => {
       term.destroy()
       term.kill()
       delete terms[term.pid]
       delete logs[term.pid]
-    }, 0)
+    }
   })
 })
 
