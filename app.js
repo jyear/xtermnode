@@ -218,6 +218,7 @@ io.of('/termsocket').on('connection', socket => {
       deleteDir(terms[pid].dirName)
     }
     term.write('exit\r')
+    console.log(`${terms[pid].dockerContainerID}`)
     spawn('docker', ['stop', `${terms[pid].dockerContainerID}`])
     spawn('docker', ['rm', `${terms[pid].dockerContainerID}`])
     process.nextTick = () => {
