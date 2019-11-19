@@ -221,9 +221,10 @@ io.of('/termsocket').on('connection', socket => {
     process.nextTick = () => {
       term.destroy()
       term.kill()
-
       delete terms[term.pid]
       delete logs[term.pid]
+      spawn('docker', ['stop', `${terms[pid].dockerContainerID}`])
+      spawn('docker', ['rm', `${terms[pid].dockerContainerID}`])
     }
   })
 })
@@ -235,9 +236,12 @@ io.close(() => {
     }
     terms[key].destroy()
     term[key].kill()
+    spawn('docker', ['stop', `${terms[pid].dockerContainerID}`])
+    spawn('docker', ['rm', `${terms[pid].dockerContainerID}`])
   }
   delete terms
   delete logs
+  console.log('socket服务关闭')
 })
 
 // 监听端口
