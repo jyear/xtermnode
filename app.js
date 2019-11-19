@@ -34,8 +34,8 @@ nodeterm = pty.spawn(
   [],
   {
     name: 'xterm-color',
-    cols: cols || 80,
-    rows: rows || 24,
+    cols: 80,
+    rows: 24,
     cwd: env.HOME,
     env: env,
     encoding: 'utf8' //让输出的编码为utf8
