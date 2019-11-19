@@ -213,17 +213,17 @@ io.of('/termsocket').on('connection', socket => {
   })
   //socket关闭的时候关闭term
   socket.on('close', () => {
-    console.log('terminal关闭PID:' + socket.request._query.pid)
+    console.log('terminal关闭PID:' + pid)
     if (terms[pid].dirName && terms[pid].dirName.length > 0) {
       deleteDir(terms[pid].dirName)
     }
     term.write('exit\r')
-    console.log(`${terms[pid].dockerContainerID}`)
+    console.log(terms[pid])
     process.nextTick = () => {
       term.destroy()
       term.kill()
-      spawn('docker', ['stop', `${terms[pid].dockerContainerID}`])
-      spawn('docker', ['rm', `${terms[pid].dockerContainerID}`])
+      //spawn('docker', ['stop', `${terms[pid].dockerContainerID}`])
+      //spawn('docker', ['rm', `${terms[pid].dockerContainerID}`])
       delete terms[term.pid]
       delete logs[term.pid]
     }
