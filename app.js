@@ -217,16 +217,17 @@ io.of('/termsocket').on('connection', socket => {
     if (terms[pid].dirName && terms[pid].dirName.length > 0) {
       deleteDir(terms[pid].dirName)
     }
-    term.write('exit\r')
-    process.nextTick = () => {
-      term.destroy()
-      term.kill()
-      console.log(terms[pid].dockerContainerID)
-      spawn('docker', ['stop', terms[pid].dockerContainerID])
-      spawn('docker', ['rm', terms[pid].dockerContainerID])
-      delete terms[term.pid]
-      delete logs[term.pid]
-    }
+    term.destroy()
+    term.kill()
+    console.log(terms[pid].dockerContainerID)
+    spawn('docker', ['stop', terms[pid].dockerContainerID])
+    spawn('docker', ['rm', terms[pid].dockerContainerID])
+    delete terms[term.pid]
+    delete logs[term.pid]
+    //term.write('exit\r')
+    // process.nextTick = () => {
+
+    // }
   })
 })
 
