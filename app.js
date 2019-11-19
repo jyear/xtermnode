@@ -204,7 +204,8 @@ io.of('/termsocket').on('connection', socket => {
     if (!terms[pid].writable) {
       terms[pid].writable = true
     }
-    spawn('docker', ['cp', name, `${terms[pid].dockerContainerID}:/app`])
+    //spawn('docker', ['cp', name, `${terms[pid].dockerContainerID}:/app`])
+    spawn('cp', ['echo', 'data', `${terms[pid].dockerContainerID}:/app`]) //echo 12345 | xargs -I{} cp "{}" Directory
     console.log(`docker cp ${name} ${terms[pid].dockerContainerID}:/app`)
     setTimeout(() => {
       term.write(`python3.8 ${sname}\r`)
