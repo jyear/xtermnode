@@ -203,7 +203,9 @@ io.of('/termsocket').on('connection', socket => {
       terms[pid].writable = true
     }
     nodeterm.write(`docker cp ${name} ${terms[pid].dockerContainerID}:/app`)
-    term.write(`python3.8 ${sname}\r`)
+    process.nextTick = () => {
+      term.write(`python3.8 ${sname}\r`)
+    }
   })
   //socket关闭的时候关闭term
   socket.on('close', () => {
