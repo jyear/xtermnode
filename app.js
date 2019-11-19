@@ -28,7 +28,7 @@ app.use(
     allowHeaders: ['Content-Type', 'Authorization', 'Accept']
   })
 )
-
+const env = Object.assign({}, process.env)
 nodeterm = pty.spawn(
   process.platform === 'win32' ? 'powershell.exe' : 'bash',
   [],
@@ -63,7 +63,6 @@ router.post('/term', async (ctx, next) => {
   //     return container.start();
   //   });
 
-  const env = Object.assign({}, process.env)
   env['COLORTERM'] = 'truecolor'
   var cols = parseInt(ctx.request.query.cols),
     rows = parseInt(ctx.request.query.rows),
