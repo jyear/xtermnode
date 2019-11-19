@@ -247,6 +247,7 @@ io.close(() => {
 })
 
 setTimeout(() => {
+  console.log('定时删除任务')
   spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
 }, 5000)
 
