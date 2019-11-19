@@ -9,7 +9,7 @@ const cors = require('koa2-cors')
 const os = require('os')
 const CronJob = require('cron').CronJob
 const { spawn, exec } = require('child_process')
-// var process = require('process')
+//var process = require('process')
 //var Docker = require('dockerode')
 
 function deleteDir(path) {
@@ -115,8 +115,6 @@ router.post('/term', async (ctx, next) => {
       }
     }
   })
-  //term.write("sudo docker run -it centos \r");
-  //ctx.response.body = 'test'
   await next()
 })
 app.use(router.routes())
@@ -132,52 +130,10 @@ io.of('/termsocket').on('connection', socket => {
 
   //把存起来的初始化数据发送给前端展示
   socket.send(logs[term.pid])
-  //   function buffer(socket, timeout) {
-  //     let s = "";
-  //     let sender = null;
-  //     return data => {
-  //       s += data;
-  //       if (!sender) {
-  //         sender = setTimeout(() => {
-  //           socket.send(s);
-  //           s = "";
-  //           sender = null;
-  //         }, timeout);
-  //       }
-  //     };
-  //   }
-
-  //   function bufferUtf8(socket, timeout) {
-  //     let buffer = [];
-  //     let sender = null;
-  //     let length = 0;
-  //     return data => {
-  //       buffer.push(data);
-  //       length += data.length;
-  //       if (!sender) {
-  //         sender = setTimeout(() => {
-  //           let data = Buffer.concat(buffer, length).toString("utf8");
-  //           data = terms[parseInt(socket.request._query.pid)].writable
-  //             ? data
-  //             : data.replace("process_over", "");
-  //           socket.send(data);
-  //           buffer = [];
-  //           sender = null;
-  //           length = 0;
-  //         }, timeout);
-  //       }
-  //     };
-  //   }
-  //   const send = USE_BINARY ? bufferUtf8(socket, 5) : buffer(socket, 5);
 
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
     if (terms[pid].initCode && data.indexOf(terms[pid].initCode) != -1) {
-      //   if (terms[pid].filepath && terms[pid].filepath.length > 0) {
-      //     fs.unlinkSync(terms[pid].filepath);
-      //     terms[pid].filepath = null;
-      //   }
-
       terms[pid].writable = false
     }
     console.log('data:', data)
@@ -221,7 +177,6 @@ io.of('/termsocket').on('connection', socket => {
     term.destroy()
     term.kill()
     spawn('docker', ['stop', terms[pid].dockerContainerID])
-    // spawn('docker', ['rm', terms[pid].dockerContainerID])
     delete terms[term.pid]
     delete logs[term.pid]
   })
@@ -241,21 +196,11 @@ io.close(() => {
   console.log('socket服务关闭')
 })
 
-// function timeDelete() {
-//   setTimeout(() => {
-//     console.log('定时删除已经停止的docker容器任务')
-//     spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
-//     exec("docker rm `docker ps -a|grep Exited|awk '{print $1}'`")
-//     timeDelete()
-//   }, 1000 * 60 * 10)
-// }
-// timeDelete()
-//
+//定时任务
 new CronJob(
-  '*/5 * * * * *',
+  '* */5 * * * *',
   () => {
     console.log('定时删除已经停止的docker容器任务')
-    spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
     exec("docker rm `docker ps -a|grep Exited|awk '{print $1}'`")
   },
   null,
