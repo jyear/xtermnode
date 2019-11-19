@@ -9,8 +9,23 @@ var cors = require('koa2-cors')
 var os = require('os')
 const { spawn } = require('child_process')
 // var process = require('process')
+//var Docker = require('dockerode')
 
-var Docker = require('dockerode')
+function deleteDir(path) {
+  let files = []
+  if (fs.existsSync(path)) {
+    files = fs.readdirSync(path)
+    files.forEach((file, index) => {
+      let curPath = path + '/' + file
+      if (fs.statSync(curPath).isDirectory()) {
+        delDir(curPath) //递归删除文件夹
+      } else {
+        fs.unlinkSync(curPath) //删除文件
+      }
+    })
+    fs.rmdirSync(path)
+  }
+}
 
 var pty = require('node-pty')
 const USE_BINARY = os.platform() !== 'win32'
@@ -29,19 +44,6 @@ app.use(
     allowHeaders: ['Content-Type', 'Authorization', 'Accept']
   })
 )
-
-// nodeterm = pty.spawn(
-//   process.platform === 'win32' ? 'powershell.exe' : 'bash',
-//   [],
-//   {
-//     name: 'xterm-color',
-//     cols: 80,
-//     rows: 24,
-//     cwd: env.HOME,
-//     env: env,
-//     encoding: 'utf8' //让输出的编码为utf8
-//   }
-// )
 
 // 首页路由
 let router = new Router()
@@ -67,7 +69,6 @@ router.post('/term', async (ctx, next) => {
   env['COLORTERM'] = 'truecolor'
   var name = path.join(__dirname, '/file', `${new Date().getTime()}`)
   fs.mkdirSync(name)
-  console.log(`${name}:/app`)
   var cols = parseInt(ctx.request.query.cols),
     rows = parseInt(ctx.request.query.rows),
     term = pty.spawn(
@@ -203,26 +204,18 @@ io.of('/termsocket').on('connection', socket => {
     fs.writeFileSync(name, newData, {
       encoding: 'utf8'
     })
-    terms[pid].filepath = name
+    //terms[pid].filepath = name
 
     if (!terms[pid].writable) {
       terms[pid].writable = true
     }
-    //spawn('docker', ['cp', name, `${terms[pid].dockerContainerID}:/app`])
-    // spawn('docker', [
-    //   'cp',
-    //   'data',
-    //   `${terms[pid].dockerContainerID}:/app/${sname}`
-    // ]) //echo 12345 | xargs -I{} cp "{}" Directory
-    // console.log(`docker cp ${name} ${terms[pid].dockerContainerID}:/app`)
     term.write(`python3.8 /app/${sname}\r`)
   })
   //socket关闭的时候关闭term
   socket.on('close', () => {
     console.log('terminal关闭PID:' + socket.request._query.pid)
-    if (terms[pid].filepath && terms[pid].filepath.length > 0) {
-      fs.unlinkSync(terms[pid].filepath)
-      terms[pid].filepath = null
+    if (terms[key].dirName && terms[key].dirName.length > 0) {
+      deleteDir(terms[pid].dirName)
     }
     term.write('exit\r')
     process.nextTick = () => {
@@ -237,9 +230,8 @@ io.of('/termsocket').on('connection', socket => {
 
 io.close(() => {
   for (let key in terms) {
-    if (terms[key].filepath && terms[key].filepath.length > 0) {
-      fs.unlinkSync(terms[key].filepath)
-      terms[key].filepath = null
+    if (terms[key].dirName && terms[key].dirName.length > 0) {
+      deleteDir(terms[pid].dirName)
     }
     terms[key].destroy()
     term[key].kill()
