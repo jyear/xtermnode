@@ -204,9 +204,9 @@ io.of('/termsocket').on('connection', socket => {
     }
     nodeterm.write(`docker cp ${name} ${terms[pid].dockerContainerID}:/app \r`)
     console.log(`docker cp ${name} ${terms[pid].dockerContainerID}:/app`)
-    process.nextTick = () => {
+    setTimeout(() => {
       term.write(`python3.8 ${sname}\r`)
-    }
+    }, 100)
   })
   //socket关闭的时候关闭term
   socket.on('close', () => {
