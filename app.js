@@ -246,6 +246,10 @@ io.close(() => {
   console.log('socket服务关闭')
 })
 
+setTimeout(() => {
+  spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
+}, 5000)
+
 // 监听端口
 server.listen(process.env.PORT || port, () => {
   console.log(`app run at : http://127.0.0.1/:${port}`)
