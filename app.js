@@ -152,7 +152,7 @@ io.of('/termsocket').on('connection', socket => {
       //     terms[pid].filepath = null;
       //   }
 
-      terms[pid].writable = false
+      terms[pid].writable = true
     }
     console.log('data:', data)
     try {
@@ -194,6 +194,7 @@ io.of('/termsocket').on('connection', socket => {
       fs.unlinkSync(terms[pid].filepath)
       terms[pid].filepath = null
     }
+
     term.destroy()
     term.kill()
     delete terms[term.pid]
