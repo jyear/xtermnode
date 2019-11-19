@@ -139,9 +139,6 @@ io.of('/termsocket').on('connection', socket => {
     console.log('data:', data)
     try {
       socket.send(data)
-      //buffer(socket, 5);
-      //socket.send(USE_BINARY ? data.toString("utf8") : data);
-      //send(data);
     } catch (ex) {
       // The WebSocket is not open, ignore
     }
