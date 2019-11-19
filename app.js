@@ -7,6 +7,7 @@ const io = require('socket.io')(server)
 const path = require('path')
 var cors = require('koa2-cors')
 var os = require('os')
+const { spawn } = require('child_process')
 // var process = require('process')
 
 var Docker = require('dockerode')
@@ -29,18 +30,18 @@ app.use(
   })
 )
 const env = Object.assign({}, process.env)
-nodeterm = pty.spawn(
-  process.platform === 'win32' ? 'powershell.exe' : 'bash',
-  [],
-  {
-    name: 'xterm-color',
-    cols: 80,
-    rows: 24,
-    cwd: env.HOME,
-    env: env,
-    encoding: 'utf8' //让输出的编码为utf8
-  }
-)
+// nodeterm = pty.spawn(
+//   process.platform === 'win32' ? 'powershell.exe' : 'bash',
+//   [],
+//   {
+//     name: 'xterm-color',
+//     cols: 80,
+//     rows: 24,
+//     cwd: env.HOME,
+//     env: env,
+//     encoding: 'utf8' //让输出的编码为utf8
+//   }
+// )
 
 // 首页路由
 let router = new Router()
@@ -193,7 +194,7 @@ io.of('/termsocket').on('connection', socket => {
       '_' +
       parseInt((Math.random() * 100000).toString(), 10) +
       '.py'
-    let name = path.join(__dirname, 'file/' + sname)
+    let name = path.join(__dirname, `file/${pid}` + sname)
     let newData = data
     fs.writeFileSync(name, newData, {
       encoding: 'utf8'
@@ -203,7 +204,7 @@ io.of('/termsocket').on('connection', socket => {
     if (!terms[pid].writable) {
       terms[pid].writable = true
     }
-    nodeterm.write(`docker cp ${name} ${terms[pid].dockerContainerID}:/app \r`)
+    spawn('docker', ['cp', name, `${terms[pid].dockerContainerID}:/app`])
     console.log(`docker cp ${name} ${terms[pid].dockerContainerID}:/app`)
     setTimeout(() => {
       term.write(`python3.8 ${sname}\r`)
@@ -220,6 +221,7 @@ io.of('/termsocket').on('connection', socket => {
     process.nextTick = () => {
       term.destroy()
       term.kill()
+
       delete terms[term.pid]
       delete logs[term.pid]
     }
