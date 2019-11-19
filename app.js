@@ -177,7 +177,7 @@ io.of('/termsocket').on('connection', socket => {
       //     terms[pid].filepath = null;
       //   }
 
-      terms[pid].writable = true
+      terms[pid].writable = false
     }
     console.log('data:', data)
     try {
@@ -219,15 +219,10 @@ io.of('/termsocket').on('connection', socket => {
     }
     term.destroy()
     term.kill()
-    console.log(terms[pid].dockerContainerID)
     spawn('docker', ['stop', terms[pid].dockerContainerID])
     spawn('docker', ['rm', terms[pid].dockerContainerID])
     delete terms[term.pid]
     delete logs[term.pid]
-    //term.write('exit\r')
-    // process.nextTick = () => {
-
-    // }
   })
 })
 
@@ -239,7 +234,6 @@ io.close(() => {
     terms[key].destroy()
     term[key].kill()
     spawn('docker', ['stop', `${terms[key].dockerContainerID}`])
-    spawn('docker', ['rm', `${terms[key].dockerContainerID}`])
   }
   delete terms
   delete logs
@@ -248,7 +242,7 @@ io.close(() => {
 
 function timeDelete() {
   setTimeout(() => {
-    console.log('定时删除任务')
+    console.log('定时删除已经停止的docker容器任务')
     spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
     exec("docker rm `docker ps -a|grep Exited|awk '{print $1}'`")
     timeDelete()
