@@ -251,11 +251,16 @@ io.close(() => {
 // }
 // timeDelete()
 //
-new CronJob('*/5 * * * * *', () => {
-  console.log('定时删除已经停止的docker容器任务')
-  spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
-  exec("docker rm `docker ps -a|grep Exited|awk '{print $1}'`")
-})
+new CronJob(
+  '*/5 * * * * *',
+  () => {
+    console.log('定时删除已经停止的docker容器任务')
+    spawn('docker', ['rm', `docker ps -a|grep Exited|awk '{print $1}'`])
+    exec("docker rm `docker ps -a|grep Exited|awk '{print $1}'`")
+  },
+  null,
+  true
+)
 
 // 监听端口
 server.listen(process.env.PORT || port, () => {
