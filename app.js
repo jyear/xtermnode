@@ -96,12 +96,6 @@ router.post('/term', async (ctx, next) => {
 
   //返回启动的pid  用于socket连接后操作term
 
-  ctx.response.body = {
-    data: term.pid.toString(),
-    code: 200,
-    message: 'success'
-  }
-
   //创建的时候 保存初始化terminal数据  以便socket连接后前端显示  并且判断初始化语句 以便判断语句执行完毕使用
   term.on('data', data => {
     logs[term.pid] += data
@@ -114,6 +108,11 @@ router.post('/term', async (ctx, next) => {
         terms[parseInt(term.pid)].dockerContainerID = regExecRes[1]
         terms[parseInt(term.pid)].initCode = regExecRes[0]
         console.log('初始值term', terms)
+        ctx.response.body = {
+          data: term.pid.toString(),
+          code: 200,
+          message: 'success'
+        }
       }
     }
   })
