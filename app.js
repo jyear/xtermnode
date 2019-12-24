@@ -133,7 +133,7 @@ io.of('/termsocket').on('connection', socket => {
   var term = terms[pid].terminal
 
   //把存起来的初始化数据发送给前端展示
-  socket.emit('initmessage:', terms[pid].initCode)
+  socket.emit('initmessage:', logs[pid])
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
     if (terms[pid].initCode && data.indexOf(terms[pid].initCode) != -1) {
