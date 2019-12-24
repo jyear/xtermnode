@@ -85,7 +85,7 @@ router.post('/term', async (ctx, next) => {
       }
     )
 
-  console.log('Created terminal with PID: ' + term.pid)
+  console.log('Created terminal with PID: ', term.pid)
   if (!terms[term.pid]) {
     terms[term.pid] = {}
   }
@@ -124,13 +124,13 @@ io.of('/termsocket').on('connection', socket => {
   if (!terms || !terms[pid]) {
     return
   }
-  console.log('socket连接时发送', terms[pid].initCode)
-  socket.emit('initmessage', logs[term.pid])
+  console.log('socket连接时发送', logs[term.pid], terms[pid].initCode)
+
   //socket连接根据pid操作对应的terminal
   var term = terms[pid].terminal
 
   //把存起来的初始化数据发送给前端展示
-
+  socket.emit('initmessage:', logs[term.pid])
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
     if (terms[pid].initCode && data.indexOf(terms[pid].initCode) != -1) {
