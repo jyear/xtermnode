@@ -125,7 +125,8 @@ io.of('/termsocket').on('connection', socket => {
     return
   }
   console.log('logs:', logs)
-  console.log('socket连接时发送', logs[pid], terms[pid].initCode)
+  console.log('terms:', terms)
+  // console.log('socket连接时发送', logs[pid], terms[pid].initCode)
 
   //socket连接根据pid操作对应的terminal
   var term = terms[pid].terminal
