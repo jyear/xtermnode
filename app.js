@@ -129,7 +129,7 @@ io.of('/termsocket').on('connection', socket => {
   var term = terms[pid].terminal
 
   //把存起来的初始化数据发送给前端展示
-  socket.send('initmessage', logs[term.pid]);
+  socket.emit('initmessage', logs[term.pid])
 
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
@@ -137,7 +137,7 @@ io.of('/termsocket').on('connection', socket => {
       terms[pid].writable = false
     }
     try {
-      socket.send(data)
+      socket.emit('message', data)
     } catch (ex) {
       // The WebSocket is not open, ignore
     }
