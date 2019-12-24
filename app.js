@@ -124,6 +124,7 @@ io.of('/termsocket').on('connection', socket => {
   if (!terms || !terms[pid]) {
     return
   }
+  console.log(terms)
   console.log('socket连接时发送', logs[term.pid], terms[pid].initCode)
 
   //socket连接根据pid操作对应的terminal
