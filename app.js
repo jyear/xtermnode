@@ -109,7 +109,7 @@ router.post('/term', async (ctx, next) => {
       terms[parseInt(term.pid)].initCode = data
       var reg = /root@(.*?)\ app/
       var regExecRes = reg.exec(data)
-      console.log(regExecRes)
+      console.log('获取初始值：', regExecRes)
       if (regExecRes && regExecRes[1]) {
         terms[parseInt(term.pid)].dockerContainerID = regExecRes[1]
       }
@@ -124,12 +124,12 @@ io.of('/termsocket').on('connection', socket => {
   if (!terms || !terms[pid]) {
     return
   }
-  console.log(terms[pid].initCode)
+  console.log('socket连接时发送', terms[pid].initCode)
+  socket.emit('initmessage', logs[term.pid])
   //socket连接根据pid操作对应的terminal
   var term = terms[pid].terminal
 
   //把存起来的初始化数据发送给前端展示
-  socket.emit('initmessage', logs[term.pid])
 
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
