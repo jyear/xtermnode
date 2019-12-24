@@ -125,13 +125,13 @@ io.of('/termsocket').on('connection', socket => {
     return
   }
   console.log(terms)
-  console.log('socket连接时发送', logs[term.pid], terms[pid].initCode)
+  console.log('socket连接时发送', logs[pid], terms[pid].initCode)
 
   //socket连接根据pid操作对应的terminal
   var term = terms[pid].terminal
 
   //把存起来的初始化数据发送给前端展示
-  socket.emit('initmessage:', logs[term.pid])
+  socket.emit('initmessage:', logs[pid])
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
     if (terms[pid].initCode && data.indexOf(terms[pid].initCode) != -1) {
