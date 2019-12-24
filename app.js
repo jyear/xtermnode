@@ -108,15 +108,15 @@ router.post('/term', async (ctx, next) => {
         terms[parseInt(term.pid)].dockerContainerID = regExecRes[1]
         terms[parseInt(term.pid)].initCode = regExecRes[0]
         console.log('初始值term', terms)
-        ctx.response.body = {
-          data: term.pid.toString(),
-          code: 200,
-          message: 'success'
-        }
       }
     }
   })
   await next()
+  ctx.response.body = {
+    data: term.pid.toString(),
+    code: 200,
+    message: 'success'
+  }
 })
 app.use(router.routes())
 
