@@ -129,14 +129,13 @@ io.of('/termsocket').on('connection', socket => {
   var term = terms[pid].terminal
 
   //把存起来的初始化数据发送给前端展示
-  socket.send(logs[term.pid])
+  socket.emit('initmessage', logs[term.pid])
 
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
     if (terms[pid].initCode && data.indexOf(terms[pid].initCode) != -1) {
       terms[pid].writable = false
     }
-    console.log('data:', data)
     try {
       socket.send(data)
     } catch (ex) {
