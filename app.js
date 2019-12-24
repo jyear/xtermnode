@@ -109,6 +109,7 @@ router.post('/term', async (ctx, next) => {
       terms[parseInt(term.pid)].initCode = data
       var reg = /root@(.*?)\ app/
       var regExecRes = reg.exec(data)
+      console.log('初始值', regExecRes)
       if (regExecRes && regExecRes[1]) {
         terms[parseInt(term.pid)].dockerContainerID = regExecRes[1]
         terms[parseInt(term.pid)].initCode = regExecRes[0]
