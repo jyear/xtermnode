@@ -84,14 +84,12 @@ router.post('/term', async (ctx, next) => {
         encoding: 'utf8' //让输出的编码为utf8
       }
     )
-
   console.log('Created terminal with PID: ', term.pid)
   if (!terms[term.pid]) {
     terms[term.pid] = {}
   }
   terms[term.pid].dirName = name
   terms[term.pid].terminal = term
-  //terms[term.pid].writable = true
   logs[term.pid] = ''
 
   function getData() {
@@ -114,17 +112,21 @@ router.post('/term', async (ctx, next) => {
       })
     })
   }
-  let res = await getData()
-  //返回启动的pid  用于socket连接后操作term
-
-  //创建的时候 保存初始化terminal数据  以便socket连接后前端显示  并且判断初始化语句 以便判断语句执行完毕使用
-
-  await next()
-  ctx.response.body = {
-    data: term.pid.toString(),
-    code: 200,
-    message: 'success'
+  try {
+    let res = await getData()
+    ctx.response.body = {
+      data: term.pid.toString(),
+      code: 200,
+      message: 'success'
+    }
+  } catch {
+    ctx.response.body = {
+      data: '服务器异常',
+      code: 301,
+      message: 'success'
+    }
   }
+  await next()
 })
 app.use(router.routes())
 
