@@ -149,7 +149,7 @@ io.of('/termsocket').on('connection', socket => {
   })
 
   socket.on('message', data => {
-    console.log(term)
+    console.log(terms[pid])
     if (terms[pid].writable) term.write(data)
   })
   socket.on('leftmessage', data => {
