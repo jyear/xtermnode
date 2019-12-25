@@ -120,14 +120,12 @@ router.post('/term', async (ctx, next) => {
 
   //创建的时候 保存初始化terminal数据  以便socket连接后前端显示  并且判断初始化语句 以便判断语句执行完毕使用
 
-  // term.on('connection', () => {
-  //   ctx.response.body = {
-  //     data: term.pid.toString(),
-  //     code: 200,
-  //     message: 'success'
-  //   }
-  // })
   await next()
+  ctx.response.body = {
+    data: term.pid.toString(),
+    code: 200,
+    message: 'success'
+  }
 })
 app.use(router.routes())
 
