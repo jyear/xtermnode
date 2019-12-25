@@ -97,25 +97,27 @@ router.post('/term', async (ctx, next) => {
   //返回启动的pid  用于socket连接后操作term
 
   //创建的时候 保存初始化terminal数据  以便socket连接后前端显示  并且判断初始化语句 以便判断语句执行完毕使用
-  term.on('data', data => {
-    logs[term.pid] += data
-    if (!terms[parseInt(term.pid)].initCode) {
-      terms[parseInt(term.pid)].initCode = data
-      var reg = /root@(.*?)\ app/
-      var regExecRes = reg.exec(data)
-      console.log(regExecRes)
-      if (regExecRes && regExecRes[1]) {
-        terms[parseInt(term.pid)].dockerContainerID = regExecRes[1]
-        terms[parseInt(term.pid)].initCode = regExecRes[0]
-      }
+  // term.on('data', data => {
+  //   logs[term.pid] += data
+  //   if (!terms[parseInt(term.pid)].initCode) {
+  //     terms[parseInt(term.pid)].initCode = data
+  //     var reg = /root@(.*?)\ app/
+  //     var regExecRes = reg.exec(data)
+  //     if (regExecRes && regExecRes[1]) {
+  //       terms[parseInt(term.pid)].dockerContainerID = regExecRes[1]
+  //       terms[parseInt(term.pid)].initCode = regExecRes[0]
+  //     }
+  //   }
+  // })
+
+  term.on('connection', () => {
+    ctx.response.body = {
+      data: term.pid.toString(),
+      code: 200,
+      message: 'success'
     }
   })
   await next()
-  ctx.response.body = {
-    data: term.pid.toString(),
-    code: 200,
-    message: 'success'
-  }
 })
 app.use(router.routes())
 
@@ -136,11 +138,19 @@ io.of('/termsocket').on('connection', socket => {
   socket.emit('message', logs[pid])
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
-    console.log('initCode:', terms[pid].initCode)
+    //logs[term.pid] += data
+    if (!terms[pid].initCode && data.indexOf('root@') != -1) {
+      terms[pid].initCode = data
+      var reg = /root@(.*?)\ app/
+      var regExecRes = reg.exec(data)
+      if (regExecRes && regExecRes[1]) {
+        terms[pid].dockerContainerID = regExecRes[1]
+        terms[pid].initCode = regExecRes[0]
+      }
+    }
     if (terms[pid].initCode && data.indexOf(terms[pid].initCode) != -1) {
       terms[pid].writable = false
     }
-    console.log('data:', data)
     try {
       socket.emit('message', data)
     } catch (ex) {
@@ -149,7 +159,6 @@ io.of('/termsocket').on('connection', socket => {
   })
 
   socket.on('message', data => {
-    console.log(terms[pid])
     if (terms[pid].writable) term.write(data)
   })
   socket.on('leftmessage', data => {
