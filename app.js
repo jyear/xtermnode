@@ -135,7 +135,7 @@ io.of('/termsocket').on('connection', socket => {
     if (terms[pid].initCode && data.indexOf(terms[pid].initCode) != -1) {
       terms[pid].writable = true
     }
-    console.log(data)
+    console.log('data:', data)
     try {
       socket.emit('message', data)
     } catch (ex) {
