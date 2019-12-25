@@ -134,6 +134,7 @@ io.of('/termsocket').on('connection', socket => {
   socket.emit('message', logs[pid])
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
+    console.log('initCode:', terms[pid].initCode)
     if (terms[pid].initCode && data.indexOf(terms[pid].initCode) != -1) {
       terms[pid].writable = false
     }
