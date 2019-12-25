@@ -98,7 +98,6 @@ router.post('/term', async (ctx, next) => {
     return new Promise((resolve, reject) => {
       term.on('data', data => {
         logs[term.pid] += data
-        console.log('init', data)
         if (!terms[parseInt(term.pid)].initCode) {
           terms[parseInt(term.pid)].initCode = data
           var reg = /root@(.*?)\ app/
@@ -106,7 +105,7 @@ router.post('/term', async (ctx, next) => {
           if (regExecRes && regExecRes[1]) {
             resolve(data)
             terms[parseInt(term.pid)].dockerContainerID = regExecRes[1]
-            terms[parseInt(term.pid)].initCode = regExecRes[0]
+            terms[parseInt(term.pid)].initCode = data
           }
         }
       })
@@ -116,7 +115,6 @@ router.post('/term', async (ctx, next) => {
     })
   }
   let res = await getData()
-  console.log(res)
   //返回启动的pid  用于socket连接后操作term
 
   //创建的时候 保存初始化terminal数据  以便socket连接后前端显示  并且判断初始化语句 以便判断语句执行完毕使用
