@@ -120,7 +120,12 @@ app.use(router.routes())
 
 io.of('/termsocket').on('connection', socket => {
   var pid = parseInt(socket.request._query.pid)
-  if (!terms || !terms[pid]) {
+  if (
+    !terms ||
+    !terms[pid] ||
+    !terms[pid].initCode ||
+    terms[pid].initCode.length <= 0
+  ) {
     return
   }
   // console.log('socket连接时发送', logs[pid], terms[pid].initCode)
