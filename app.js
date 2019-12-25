@@ -130,6 +130,7 @@ io.of('/termsocket').on('connection', socket => {
 
   //把存起来的初始化数据发送给前端展示
   socket.emit('initmessage', logs[pid])
+  term.write(logs[pid])
   socket.emit('message', logs[pid])
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
