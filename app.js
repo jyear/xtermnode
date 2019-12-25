@@ -122,12 +122,7 @@ app.use(router.routes())
 io.of('/termsocket').on('connection', socket => {
   var pid = parseInt(socket.request._query.pid)
   console.log(terms)
-  if (
-    !terms ||
-    !terms[pid] ||
-    !terms[pid].initCode ||
-    terms[pid].initCode.length <= 0
-  ) {
+  if (!terms || !terms[pid]) {
     return
   }
   // console.log('socket连接时发送', logs[pid], terms[pid].initCode)
@@ -154,6 +149,7 @@ io.of('/termsocket').on('connection', socket => {
   })
 
   socket.on('message', data => {
+    console.log(term)
     if (terms[pid].writable) term.write(data)
   })
   socket.on('leftmessage', data => {
