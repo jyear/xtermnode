@@ -103,11 +103,9 @@ router.post('/term', async (ctx, next) => {
       terms[parseInt(term.pid)].initCode = data
       var reg = /root@(.*?)\ app/
       var regExecRes = reg.exec(data)
-      console.log('初始值', regExecRes)
       if (regExecRes && regExecRes[1]) {
         terms[parseInt(term.pid)].dockerContainerID = regExecRes[1]
         terms[parseInt(term.pid)].initCode = regExecRes[0]
-        console.log('初始值term', terms)
       }
     }
   })
@@ -125,8 +123,6 @@ io.of('/termsocket').on('connection', socket => {
   if (!terms || !terms[pid]) {
     return
   }
-  console.log('logs:', logs)
-  console.log('terms:', terms)
   // console.log('socket连接时发送', logs[pid], terms[pid].initCode)
 
   //socket连接根据pid操作对应的terminal
@@ -137,8 +133,9 @@ io.of('/termsocket').on('connection', socket => {
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
     if (terms[pid].initCode && data.indexOf(terms[pid].initCode) != -1) {
-      terms[pid].writable = false
+      terms[pid].writable = true
     }
+    console.log(data)
     try {
       socket.emit('message', data)
     } catch (ex) {
