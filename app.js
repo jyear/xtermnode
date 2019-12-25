@@ -141,21 +141,11 @@ io.of('/termsocket').on('connection', socket => {
   var term = terms[pid].terminal
 
   //把存起来的初始化数据发送给前端展示
-  socket.emit('initmessage', logs[pid])
-  term.write(logs[pid])
-  socket.emit('message', logs[pid])
+  socket.emit('initmessage', terms[pid].initCode)
+  //socket.emit('message', logs[pid])
+
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
-    //logs[term.pid] += data
-    // if (!terms[pid].initCode && data.indexOf('root@') != -1) {
-    //   terms[pid].initCode = data
-    //   var reg = /root@(.*?)\ app/
-    //   var regExecRes = reg.exec(data)
-    //   if (regExecRes && regExecRes[1]) {
-    //     terms[pid].dockerContainerID = regExecRes[1]
-    //     terms[pid].initCode = regExecRes[0]
-    //   }
-    // }
     if (terms[pid].initCode && data.indexOf(terms[pid].initCode) != -1) {
       terms[pid].writable = false
     }
