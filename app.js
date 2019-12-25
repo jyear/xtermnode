@@ -94,6 +94,27 @@ router.post('/term', async (ctx, next) => {
   //terms[term.pid].writable = true
   logs[term.pid] = ''
 
+  function getData() {
+    return new Promise((resolve, reject) => {
+      term.on('data', data => {
+        logs[term.pid] += data
+        if (!terms[parseInt(term.pid)].initCode) {
+          terms[parseInt(term.pid)].initCode = data
+          var reg = /root@(.*?)\ app/
+          var regExecRes = reg.exec(data)
+          if (regExecRes && regExecRes[1]) {
+            resolve(data)
+            terms[parseInt(term.pid)].dockerContainerID = regExecRes[1]
+            terms[parseInt(term.pid)].initCode = regExecRes[0]
+          }
+        }
+      })
+      term.on('error', () => {
+        reject('node-pty connection error')
+      })
+    })
+  }
+  let res = await getData()
   //返回启动的pid  用于socket连接后操作term
 
   //创建的时候 保存初始化terminal数据  以便socket连接后前端显示  并且判断初始化语句 以便判断语句执行完毕使用
@@ -106,23 +127,6 @@ router.post('/term', async (ctx, next) => {
   //   }
   // })
   await next()
-  term.on('data', data => {
-    logs[term.pid] += data
-    if (!terms[parseInt(term.pid)].initCode) {
-      terms[parseInt(term.pid)].initCode = data
-      ctx.response.body = {
-        data: term.pid.toString(),
-        code: 200,
-        message: 'success'
-      }
-      var reg = /root@(.*?)\ app/
-      var regExecRes = reg.exec(data)
-      if (regExecRes && regExecRes[1]) {
-        terms[parseInt(term.pid)].dockerContainerID = regExecRes[1]
-        terms[parseInt(term.pid)].initCode = regExecRes[0]
-      }
-    }
-  })
 })
 app.use(router.routes())
 
