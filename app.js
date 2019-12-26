@@ -96,7 +96,7 @@ router.post('/term', async (ctx, next) => {
     return new Promise((resolve, reject) => {
       term.on('data', data => {
         logs[term.pid] += data
-        coneole.log('initdata', data)
+        console.log('initdata', data)
         if (!terms[parseInt(term.pid)].initCode) {
           terms[parseInt(term.pid)].initCode = data
           var reg = /root@(.*?)\ app/
