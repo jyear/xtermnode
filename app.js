@@ -163,17 +163,17 @@ io.of('/termsocket').on('connection', socket => {
     if (terms[pid].writable) term.write(data)
   })
   socket.on('leftmessage', data => {
+    console.log('输入', data)
     var sname =
       new Date().getTime() +
       '_' +
       parseInt((Math.random() * 100000).toString(), 10) +
       '.py'
-    let name = path.join(`${terms[pid].dirName}/` + sname)
+    let name = path.join(`${terms[pid].dirName}/`, sname)
     let newData = data
     fs.writeFileSync(name, newData, {
       encoding: 'utf8'
     })
-    //terms[pid].filepath = name
 
     if (!terms[pid].writable) {
       terms[pid].writable = true
