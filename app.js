@@ -90,6 +90,7 @@ router.post('/term', async (ctx, next) => {
   }
   terms[term.pid].dirName = name
   terms[term.pid].terminal = term
+  terms[term.pid].writable = true
   logs[term.pid] = ''
 
   function getData() {
@@ -149,7 +150,7 @@ io.of('/termsocket').on('connection', socket => {
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
     if (terms[pid].initCode && data.indexOf(terms[pid].initCode) != -1) {
-      terms[pid].writable = false
+      terms[pid].writable = true
     }
     console.log(data)
     try {
