@@ -150,7 +150,7 @@ io.of('/termsocket').on('connection', socket => {
   //监听terminal输出数据  通过socket发送给前端展示
   term.on('data', function(data) {
     if (terms[pid].initCode && data.indexOf(terms[pid].initCode) != -1) {
-      terms[pid].writable = true
+      terms[pid].writable = false
     }
     console.log(data)
     try {
